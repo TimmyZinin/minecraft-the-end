@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>КРАЙ — Третье измерение Майнкрафта</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --end-dark: #0D0016;
+  --end-purple: #1B0030;
+  --chorus: #9B30FF;
+  --ender-green: #00FF80;
+  --endstone: #DBCB82;
+  --obsidian: #1a1028;
+  --portal: #0f2040;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--end-dark);
+  color: #e0d0f0;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  overflow-x: hidden;
+  line-height: 1.7;
+}
+
+/* ===== PARTICLES ===== */
+.particles {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.particle {
+  position: absolute;
+  width: 3px; height: 3px;
+  background: var(--chorus);
+  border-radius: 50%;
+  opacity: 0;
+  animation: floatUp linear infinite;
+}
+@keyframes floatUp {
+  0% { opacity: 0; transform: translateY(100vh) scale(0.5); }
+  10% { opacity: 0.8; }
+  90% { opacity: 0.6; }
+  100% { opacity: 0; transform: translateY(-10vh) scale(1.2); }
+}
+
+/* ===== NAV ===== */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  background: rgba(13, 0, 22, 0.9);
+  backdrop-filter: blur(10px);
+  border-bottom: 2px solid var(--chorus);
+  padding: 10px 0;
+  overflow-x: auto;
+}
+nav ul {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  list-style: none;
+  padding: 0 16px;
+  flex-wrap: nowrap;
+  min-width: max-content;
+}
+nav a {
+  color: #c0a0e0;
+  text-decoration: none;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  padding: 6px 10px;
+  border: 1px solid transparent;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+nav a:hover {
+  color: var(--ender-green);
+  border-color: var(--ender-green);
+  text-shadow: 0 0 10px var(--ender-green);
+}
+
+/* ===== HERO ===== */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 100px 20px 60px;
+  position: relative;
+  z-index: 1;
+}
+.hero h1 {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(48px, 12vw, 120px);
+  color: var(--chorus);
+  text-shadow:
+    0 0 20px var(--chorus),
+    0 0 60px rgba(155, 48, 255, 0.5),
+    0 0 120px rgba(155, 48, 255, 0.3);
+  letter-spacing: 20px;
+  animation: titlePulse 3s ease-in-out infinite;
+  margin-bottom: 20px;
+}
+@keyframes titlePulse {
+  0%, 100% { text-shadow: 0 0 20px var(--chorus), 0 0 60px rgba(155, 48, 255, 0.5); }
+  50% { text-shadow: 0 0 40px var(--chorus), 0 0 100px rgba(155, 48, 255, 0.7), 0 0 160px rgba(155, 48, 255, 0.4); }
+}
+.hero .subtitle {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(10px, 2.5vw, 18px);
+  color: var(--ender-green);
+  text-shadow: 0 0 15px var(--ender-green);
+  margin-bottom: 40px;
+  letter-spacing: 4px;
+}
+
+/* Portal animation */
+.portal-container {
+  position: relative;
+  width: 200px; height: 200px;
+  margin: 30px auto;
+}
+.portal-frame {
+  position: absolute;
+  inset: 0;
+  border: 8px solid var(--obsidian);
+  border-radius: 50%;
+  animation: portalSpin 10s linear infinite;
+  box-shadow: 0 0 20px rgba(155, 48, 255, 0.3);
+}
+.portal-frame::before {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, #000820, #0a0030, #150050);
+  animation: portalShimmer 2s ease-in-out infinite alternate;
+}
+.portal-frame::after {
+  content: '';
+  position: absolute;
+  inset: 12px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(155, 48, 255, 0.3), transparent 60%);
+  animation: portalGlow 3s ease-in-out infinite;
+}
+@keyframes portalSpin { to { transform: rotate(360deg); } }
+@keyframes portalShimmer {
+  from { background: radial-gradient(ellipse, #000820, #0a0030, #150050); }
+  to { background: radial-gradient(ellipse, #0a1040, #100060, #1a0070); }
+}
+@keyframes portalGlow {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+/* Eyes around portal */
+.eye {
+  position: absolute;
+  width: 12px; height: 12px;
+  background: var(--ender-green);
+  border-radius: 50% 50% 50% 0;
+  box-shadow: 0 0 8px var(--ender-green);
+  transform-origin: center;
+}
+
+/* ===== VIDEO ===== */
+.video-section {
+  max-width: 800px;
+  margin: 40px auto 0;
+  padding: 0 20px;
+}
+.video-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;
+  color: var(--ender-green);
+  text-align: center;
+  margin-bottom: 16px;
+  text-shadow: 0 0 10px var(--ender-green);
+}
+.video-wrapper {
+  position: relative;
+  border: 3px solid var(--chorus);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow:
+    0 0 30px rgba(155, 48, 255, 0.4),
+    inset 0 0 30px rgba(155, 48, 255, 0.1);
+}
+.video-wrapper video {
+  width: 100%;
+  display: block;
+  background: #000;
+}
+
+/* ===== SECTIONS ===== */
+section {
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 80px 24px 40px;
+}
+.section-card {
+  background: linear-gradient(135deg, rgba(27, 0, 48, 0.8), rgba(13, 0, 22, 0.9));
+  border: 2px solid rgba(155, 48, 255, 0.3);
+  border-radius: 12px;
+  padding: 40px 32px;
+  margin-bottom: 30px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.section-card:hover {
+  border-color: var(--chorus);
+  box-shadow: 0 0 40px rgba(155, 48, 255, 0.2);
+}
+.section-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  display: block;
+}
+.section-card h2 {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(14px, 3vw, 22px);
+  color: var(--chorus);
+  margin-bottom: 20px;
+  text-shadow: 0 0 10px rgba(155, 48, 255, 0.5);
+  line-height: 1.5;
+}
+.section-card p {
+  font-size: 16px;
+  margin-bottom: 14px;
+  color: #d0c0e8;
+}
+.section-card strong { color: var(--ender-green); }
+.section-card .tip {
+  background: rgba(0, 255, 128, 0.08);
+  border-left: 3px solid var(--ender-green);
+  padding: 12px 16px;
+  margin-top: 16px;
+  border-radius: 0 8px 8px 0;
+  font-size: 14px;
+}
+.section-card .tip::before {
+  content: '💡 ';
+}
+.section-card ul {
+  padding-left: 24px;
+  margin: 10px 0;
+}
+.section-card li {
+  margin-bottom: 6px;
+}
+
+/* ===== ENDERMAN SECTION ===== */
+#endermen .section-card {
+  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32'><text y='28' font-size='28'>👁</text></svg>") 16 16, pointer;
+}
+#endermen .section-card:hover {
+  border-color: var(--ender-green);
+  box-shadow: 0 0 50px rgba(0, 255, 128, 0.3);
+}
+
+/* ===== DRAGON EGG ===== */
+.dragon-egg {
+  display: inline-block;
+  font-size: 60px;
+  cursor: pointer;
+  transition: transform 0.1s;
+  user-select: none;
+}
+.dragon-egg:active {
+  transform: scale(0.9);
+}
+.dragon-egg.teleported {
+  animation: eggTeleport 0.3s ease-out;
+}
+@keyframes eggTeleport {
+  0% { opacity: 0; transform: scale(0.5); }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* ===== FOOTER ===== */
+footer {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 40px 20px;
+  border-top: 2px solid rgba(155, 48, 255, 0.2);
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  color: #604080;
+}
+footer span { color: var(--ender-green); }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 600px) {
+  .section-card { padding: 24px 18px; }
+  nav a { font-size: 7px; padding: 4px 6px; }
+  .portal-container { width: 140px; height: 140px; }
+}
+</style>
+</head>
+<body>
+
+<div class="particles" id="particles"></div>
+
+<nav>
+  <ul>
+    <li><a href="#hero">Край</a></li>
+    <li><a href="#portal">Портал</a></li>
+    <li><a href="#dragon">Дракон</a></li>
+    <li><a href="#endermen">Эндермены</a></li>
+    <li><a href="#cities">Города</a></li>
+    <li><a href="#shulkers">Шалкеры</a></li>
+    <li><a href="#chorus">Хорус</a></li>
+    <li><a href="#elytra">Элитры</a></li>
+    <li><a href="#egg">Яйцо</a></li>
+    <li><a href="#tips">Советы</a></li>
+  </ul>
+</nav>
+
+<!-- ===== HERO ===== -->
+<header class="hero" id="hero">
+  <div class="portal-container">
+    <div class="portal-frame"></div>
+  </div>
+  <h1>КРАЙ</h1>
+  <div class="subtitle">Третье измерение Майнкрафта</div>
+
+  <div class="video-section">
+    <div class="video-label">🎬 Путь до Энда</div>
+    <div class="video-wrapper">
+      <video controls preload="metadata" poster="">
+        <source src="video.mp4" type="video/mp4">
+        Видео не поддерживается
+      </video>
+    </div>
+  </div>
+</header>
+
+<!-- ===== КАК ПОПАСТЬ ===== -->
+<section id="portal">
+  <div class="section-card">
+    <span class="section-icon">🌀</span>
+    <h2>Как попасть в Край</h2>
+    <p>Край — это не просто другой мир. Это <strong>финальное испытание</strong>, к которому нужно серьёзно подготовиться.</p>
+    <p>Чтобы найти портал в Край, тебе понадобятся <strong>Очи Эндера</strong> (Eyes of Ender). Их делают из Жемчуга Эндера (дроп с Эндерменов) и Огненного порошка (из Огненных стержней, которые падают с Ифритов в Нижнем мире).</p>
+    <p><strong>Как найти крепость:</strong></p>
+    <ul>
+      <li>Подбрось Око Эндера в воздух — оно полетит в сторону ближайшей крепости</li>
+      <li>Следуй за ним! Когда Око начнёт лететь вниз — крепость под тобой</li>
+      <li>Копай вниз и ищи комнату с порталом</li>
+    </ul>
+    <p>Портал — это рамка из 12 блоков. В каждый нужно вставить <strong>Око Эндера</strong>. Некоторые уже могут быть на месте. Когда все 12 глаз установлены — портал активируется!</p>
+    <div class="tip">Возьми минимум 15 Очей Эндера — некоторые могут разбиться при броске!</div>
+  </div>
+</section>
+
+<!-- ===== ЭНДЕР ДРАКОН ===== -->
+<section id="dragon">
+  <div class="section-card">
+    <span class="section-icon">🐉</span>
+    <h2>Эндер Дракон</h2>
+    <p><strong>Эндер Дракон</strong> — главный босс Майнкрафта. Огромный чёрный дракон, который летает вокруг центрального острова Края.</p>
+    <p><strong>Как победить:</strong></p>
+    <ul>
+      <li>Сначала уничтожь <strong>Кристаллы Края</strong> на вершинах обсидиановых башен — они лечат дракона!</li>
+      <li>Некоторые кристаллы защищены железными решётками — стреляй по ним из лука</li>
+      <li>Когда дракон пикирует на фонтан в центре — бей мечом!</li>
+      <li>Не стой в фиолетовом дыхании дракона — оно наносит урон</li>
+    </ul>
+    <p>После победы появляется <strong>фонтан-портал</strong> домой и куча опыта (12 000 XP — больше всего в игре!).</p>
+    <p>Дракона можно <strong>призвать заново</strong>! Поставь 4 Кристалла Края на фонтан-портал — и бой начнётся снова.</p>
+    <div class="tip">Собери Дыхание Дракона в пустую колбу — из него делают Задерживающиеся зелья!</div>
+  </div>
+</section>
+
+<!-- ===== ЭНДЕРМЕНЫ ===== -->
+<section id="endermen">
+  <div class="section-card">
+    <span class="section-icon">👾</span>
+    <h2>Эндермены</h2>
+    <p><strong>Эндермены</strong> — высокие чёрные существа с фиолетовыми глазами. В Крае их <strong>ОЧЕНЬ много</strong>.</p>
+    <p>Главное правило: <strong>НИКОГДА не смотри им в глаза!</strong> Если навести прицел на Эндермена — он замрёт, начнёт трястись, а потом бросится на тебя. И он умеет телепортироваться!</p>
+    <p><strong>Что нужно знать:</strong></p>
+    <ul>
+      <li>Эндермены боятся воды — дождь их ранит</li>
+      <li>Они могут поднимать и переносить блоки</li>
+      <li>С них падает <strong>Жемчуг Эндера</strong> — можно телепортироваться, кинув его</li>
+      <li>Они нейтральные, пока ты на них НЕ смотришь</li>
+    </ul>
+    <div class="tip">Надень тыкву на голову — тогда Эндермены не будут злиться, даже если ты смотришь на них! Правда, обзор станет хуже.</div>
+  </div>
+</section>
+
+<!-- ===== ГОРОДА КРАЯ ===== -->
+<section id="cities">
+  <div class="section-card">
+    <span class="section-icon">🏰</span>
+    <h2>Города Края</h2>
+    <p>После победы над драконом открывается проход на <strong>внешние острова Края</strong>. Там генерируются удивительные структуры — <strong>Города Края</strong> (End Cities).</p>
+    <p>Это высокие башни из <strong>пурпурных блоков</strong> с сокровищами внутри:</p>
+    <ul>
+      <li>Зачарованные алмазные доспехи и инструменты</li>
+      <li>Алмазы, изумруды, золото</li>
+      <li>Железные и золотые конские доспехи</li>
+      <li><strong>Шалкеровые снаряды</strong> для создания Шалкеровых ящиков</li>
+    </ul>
+    <p>Некоторые города имеют <strong>Корабль Края</strong> (End Ship) — парящее судно рядом с башней. Именно там хранятся <strong>Элитры</strong> — крылья для полёта!</p>
+    <div class="tip">Между островами — пустота. Строй мосты из блоков или кидай Жемчуг Эндера, чтобы телепортироваться!</div>
+  </div>
+</section>
+
+<!-- ===== ШАЛКЕРЫ ===== -->
+<section id="shulkers">
+  <div class="section-card">
+    <span class="section-icon">📦</span>
+    <h2>Шалкеры</h2>
+    <p><strong>Шалкеры</strong> — мобы, замаскированные под блоки пурпура. Они прячутся в Городах Края и выглядят как обычные блоки, пока не откроются и не начнут стрелять!</p>
+    <p>Их снаряды дают эффект <strong>Левитации</strong> — ты начинаешь неконтролируемо лететь вверх. Если эффект закончится высоко — ты упадёшь и можешь погибнуть!</p>
+    <p><strong>Зачем они нужны:</strong></p>
+    <ul>
+      <li>С них падают <strong>Панцири Шалкера</strong></li>
+      <li>Из двух панцирей и сундука крафтится <strong>Шалкеровый ящик</strong></li>
+      <li>Шалкеровый ящик — <strong>лучшее хранилище в игре</strong>! Он сохраняет все предметы внутри, когда его ломаешь</li>
+    </ul>
+    <div class="tip">Бей Шалкеров мечом, когда они открываются. Щит отражает их снаряды!</div>
+  </div>
+</section>
+
+<!-- ===== ХОРУС ===== -->
+<section id="chorus">
+  <div class="section-card">
+    <span class="section-icon">🌿</span>
+    <h2>Хорус</h2>
+    <p><strong>Хорусовые растения</strong> — странные фиолетовые деревья, которые растут на внешних островах Края. Они похожи на инопланетные кораллы.</p>
+    <p>Если сломать Хорусовое растение, с него падают <strong>Хорусовые плоды</strong>. Съешь один — и тебя <strong>случайно телепортирует</strong> куда-то поблизости!</p>
+    <p><strong>Что можно сделать с Хорусом:</strong></p>
+    <ul>
+      <li><strong>Хорусовый плод</strong> — еда + случайная телепортация</li>
+      <li><strong>Приготовленный Хорусовый плод</strong> (в печке) — из него делают Пурпурные блоки</li>
+      <li><strong>Пурпурные блоки</strong> — красивый строительный материал фиолетового цвета</li>
+      <li><strong>Стержень Энда</strong> — декоративный светящийся блок</li>
+    </ul>
+    <div class="tip">Хорусовый плод может спасти жизнь — если падаешь в пустоту, съешь его и тебя может телепортнуть обратно на блок!</div>
+  </div>
+</section>
+
+<!-- ===== ЭЛИТРЫ ===== -->
+<section id="elytra">
+  <div class="section-card">
+    <span class="section-icon">🪽</span>
+    <h2>Элитры</h2>
+    <p><strong>Элитры</strong> — это крылья, которые позволяют тебе <strong>летать</strong>! Это самый желанный предмет в Майнкрафте.</p>
+    <p><strong>Где найти:</strong> в рамке для предмета на Корабле Края (End Ship), который парит рядом с Городом Края.</p>
+    <p><strong>Как летать:</strong></p>
+    <ul>
+      <li>Надень Элитры в слот нагрудника</li>
+      <li>Прыгни с высоты и нажми пробел в воздухе</li>
+      <li>Управляй мышкой — смотри вниз для разгона, вверх для набора высоты</li>
+      <li>Используй <strong>Ракеты фейерверков</strong> для ускорения в полёте!</li>
+    </ul>
+    <p>Элитры имеют прочность, но их можно <strong>чинить фантомными мембранами</strong> на наковальне.</p>
+    <div class="tip">Зачаруй Элитры на "Прочность III" и "Починку" — и они станут почти вечными!</div>
+  </div>
+</section>
+
+<!-- ===== ЯЙЦО ДРАКОНА ===== -->
+<section id="egg">
+  <div class="section-card">
+    <span class="section-icon">🥚</span>
+    <h2>Яйцо Дракона</h2>
+    <p><strong>Яйцо Дракона</strong> — самый редкий блок в игре. Оно появляется на вершине фонтана-портала после первой победы над Эндер Драконом.</p>
+    <p>Но есть подвох — <strong>если нажать на яйцо, оно телепортируется!</strong> Просто так его не взять.</p>
+
+    <p style="text-align:center; margin: 24px 0;">
+      <span class="dragon-egg" id="dragonEgg" title="Нажми на яйцо!">🥚</span>
+      <br><small style="color: #806090;">Попробуй нажать!</small>
+    </p>
+
+    <p><strong>Как подобрать яйцо:</strong></p>
+    <ul>
+      <li><strong>Способ с поршнем:</strong> поставь поршень рядом с яйцом и активируй — яйцо выпадет как предмет</li>
+      <li><strong>Способ с факелом:</strong> убери блок под яйцом, поставь туда факел, сломай блок между яйцом и факелом — яйцо упадёт на факел и выпадет</li>
+    </ul>
+    <p>Яйцо Дракона — чисто <strong>декоративный трофей</strong>. Оно ничего не делает, но это символ твоей победы!</p>
+    <div class="tip">Яйцо даётся только ОДИН раз — при первом убийстве дракона. При повторных боях яйца не будет!</div>
+  </div>
+</section>
+
+<!-- ===== СЕКРЕТЫ И СОВЕТЫ ===== -->
+<section id="tips">
+  <div class="section-card">
+    <span class="section-icon">⚡</span>
+    <h2>Секреты и советы</h2>
+    <p>Выживание в Крае — это серьёзно. Вот что <strong>обязательно</strong> нужно знать:</p>
+    <ul>
+      <li><strong>Тыква на голове</strong> — Эндермены не будут агриться, даже если смотришь прямо на них</li>
+      <li><strong>Ведро воды</strong> — лучшая защита. Эндермены убегают от воды, а ты можешь спастись при падении</li>
+      <li><strong>Кровать</strong> — НИКОГДА не ставь кровать в Крае! Она взорвётся при попытке поспать</li>
+      <li><strong>Жемчуг Эндера</strong> — всегда носи с собой, чтобы телепортироваться при падении в пустоту</li>
+      <li><strong>Запас блоков</strong> — бери минимум 3 стака для строительства мостов между островами</li>
+      <li><strong>Тыквы и Снежки</strong> — Эндерменов можно отвлечь, кинув в них снежок</li>
+      <li><strong>Золотые яблоки</strong> — возьми несколько зачарованных для боя с драконом</li>
+      <li><strong>Медленное подкрадывание</strong> — на краю острова зажимай Shift, чтобы не упасть в пустоту</li>
+    </ul>
+    <div class="tip">Перед походом в Край поставь сундук рядом с порталом и сложи туда всё ценное. Если погибнешь в Крае — предметы пропадут в пустоте навсегда!</div>
+  </div>
+</section>
+
+<footer>
+  <p>Сделано для <span>Андрея</span> 🎮</p>
+  <p style="margin-top:8px;">Minecraft — игра от Mojang Studios</p>
+</footer>
+
+<script>
+// ===== Particles =====
+const particlesContainer = document.getElementById('particles');
+const colors = ['#9B30FF', '#7B20DF', '#BB50FF', '#ffffff', '#00FF80'];
+for (let i = 0; i < 60; i++) {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  p.style.left = Math.random() * 100 + '%';
+  p.style.animationDuration = (4 + Math.random() * 8) + 's';
+  p.style.animationDelay = Math.random() * 10 + 's';
+  p.style.width = p.style.height = (2 + Math.random() * 3) + 'px';
+  p.style.background = colors[Math.floor(Math.random() * colors.length)];
+  particlesContainer.appendChild(p);
+}
+
+// ===== Eyes around portal =====
+const portalContainer = document.querySelector('.portal-container');
+const portalSize = 200;
+for (let i = 0; i < 12; i++) {
+  const eye = document.createElement('div');
+  eye.className = 'eye';
+  const angle = (i / 12) * Math.PI * 2 - Math.PI / 2;
+  const radius = portalSize / 2 - 2;
+  const x = Math.cos(angle) * radius + portalSize / 2 - 6;
+  const y = Math.sin(angle) * radius + portalSize / 2 - 6;
+  eye.style.left = x + 'px';
+  eye.style.top = y + 'px';
+  eye.style.transform = `rotate(${angle + Math.PI/2}rad)`;
+  portalContainer.appendChild(eye);
+}
+
+// ===== Dragon Egg teleport =====
+const egg = document.getElementById('dragonEgg');
+egg.addEventListener('click', function() {
+  const card = this.closest('.section-card');
+  const maxX = card.offsetWidth - 80;
+  const newX = Math.random() * maxX - maxX/2;
+  const newY = (Math.random() - 0.5) * 40;
+  this.style.transform = `translate(${newX}px, ${newY}px)`;
+  this.classList.remove('teleported');
+  void this.offsetWidth;
+  this.classList.add('teleported');
+  // Purple particles burst
+  for (let i = 0; i < 8; i++) {
+    const spark = document.createElement('div');
+    spark.style.cssText = `
+      position: fixed; width: 4px; height: 4px;
+      background: #9B30FF; border-radius: 50%;
+      left: ${event.clientX}px; top: ${event.clientY}px;
+      pointer-events: none; z-index: 1000;
+      transition: all 0.5s ease-out; opacity: 1;
+    `;
+    document.body.appendChild(spark);
+    requestAnimationFrame(() => {
+      spark.style.left = (event.clientX + (Math.random()-0.5)*100) + 'px';
+      spark.style.top = (event.clientY + (Math.random()-0.5)*100) + 'px';
+      spark.style.opacity = '0';
+    });
+    setTimeout(() => spark.remove(), 600);
+  }
+});
+</script>
+</body>
+</html>
